@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "create-block/custom-users-block",
+  "version": "0.1.0",
+  "title": "Custom Users Block",
+  "category": "widgets",
+  "icon": "smiley",
+  "attributes": {
+    "selectedUser": {
+      "type": "object"
+    },
+    "allUsers": {
+      "type": "array"
+    }
+  },
+  "description": "Example block scaffolded with Create Block tool.",
+  "example": {},
+  "supports": {
+    "html": false
+  },
+  "textdomain": "custom-users-block",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js"
+}

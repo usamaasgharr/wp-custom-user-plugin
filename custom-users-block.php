@@ -51,7 +51,7 @@ function custom_user_routes() {
     register_rest_route('custom-users/v1', '/user/(?P<id>\d+)', array(
         'methods' => 'GET',
         'callback' => 'custom_get_user_by_email',
-        'permission_callback' => '__return_true', 
+        // 'permission_callback' => 'custom_permission_callbacke', 
         'args' => array(
             'id' => array(
                 'required' => true,
@@ -65,7 +65,7 @@ function custom_user_routes() {
     register_rest_route('custom-users/v1', '/user/(?P<id>\d+)', array(
         'methods' => 'PUT',
         'callback' => 'custom_update_user',
-        'permission_callback' => '__return_true', // Customize this for your needs
+        'permission_callback' => 'custom_permission_callback', // Customize this for your needs
         'args' => array(
             'id' => array(
                 'required' => true,
@@ -105,19 +105,15 @@ function enqueue_my_react_script() {
     wp_enqueue_script('my-react-app', plugin_dir_url(__FILE__) . 'build/index.js', array('wp-element'), '1.0', true);
 
     // Create nonce for secure API calls
-    $nonce = wp_create_nonce('wp-rest');
+    $nonce = wp_create_nonce('wp_rest');
 
     // Pass nonce to your React app via wp_localize_script
     wp_localize_script('my-react-app', 'MyAppData', array(
         'nonce' => $nonce,
     ));
 }
-
-add_action('wp_enqueue_scripts', 'enqueue_my_react_script');
-
+add_action('wp_enqueue_scripts', 'enqueue_my_react_script'); // For frontend
 add_action('enqueue_block_editor_assets', 'enqueue_my_react_script');
-
-
 
 
 // verify nonce
@@ -127,8 +123,9 @@ function custom_permission_callback(WP_REST_Request $request){
 
         // Verify nonce
         if (!wp_verify_nonce($nonce, 'wp_rest')) {
-            return 0;
+            return new WP_Error('invalid_nonce', 'Invalid nonce', array('status' => 403));
         }
+        return true;
 }
 
 

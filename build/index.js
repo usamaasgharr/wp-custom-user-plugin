@@ -40,10 +40,9 @@ function Edit({
     ID: null
   });
   const [isDisabled, setIsDisabled] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(true);
+  const nonce = window.MyAppData; // Ensure nonce is defined here
   const apiBaseUrl = `${window.location.origin}/wordpress/wp-json/custom-users/v1`;
-  console.log("MyAppData", window.MyAppData);
   (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    console.log(MyAppData.nonce); // Corrected to use MyAppData
     const fetchUsers = async () => {
       try {
         const response = await axios__WEBPACK_IMPORTED_MODULE_5__["default"].get(`${apiBaseUrl}/users`, {
@@ -76,12 +75,7 @@ function Edit({
     }
     try {
       setIsDisabled(true);
-      const response = await axios__WEBPACK_IMPORTED_MODULE_5__["default"].get(`${apiBaseUrl}/user/${id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': nonce // Include nonce here
-        }
-      });
+      const response = await axios__WEBPACK_IMPORTED_MODULE_5__["default"].get(`${apiBaseUrl}/user/${id}`);
       const data = response.data;
       setSelectedUser(data);
       setAttributes({

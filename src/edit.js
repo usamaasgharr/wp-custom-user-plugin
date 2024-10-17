@@ -15,9 +15,8 @@ export default function Edit({ attributes, setAttributes }) {
     });
 
     const [isDisabled, setIsDisabled] = useState(true);
-    const nonce = window.MyAppData; // Ensure nonce is defined here
     const apiBaseUrl = `${window.location.origin}/wordpress/wp-json/custom-users/v1`; 
-
+	console.log(MyAppData.nonce)
     useEffect(() => {
 		const fetchUsers = async () => {
 			try {
@@ -28,6 +27,7 @@ export default function Edit({ attributes, setAttributes }) {
 					}
 				});
 				const data = response.data;
+				console.log('Array',response.data)
 				setUsers(data);
 				setAttributes({ allUsers: data });
 			} catch (error) {
@@ -51,7 +51,13 @@ export default function Edit({ attributes, setAttributes }) {
         }
         try {
             setIsDisabled(true);
-            const response = await axios.get(`${apiBaseUrl}/user/${id}`);
+            const response = await axios.get(`${apiBaseUrl}/user/${id}`,{
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': MyAppData.nonce, // Corrected to use MyAppData
+				}
+			});
+
             const data = response.data;
             setSelectedUser(data);
             setAttributes({ selectedUser: data });
@@ -73,10 +79,10 @@ export default function Edit({ attributes, setAttributes }) {
         e.preventDefault();
         try {
             const response = await axios.put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': nonce, // Include nonce here
-                }
+               headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': MyAppData.nonce, // Corrected to use MyAppData
+				}
             });
             if (response.status === 200) {
                 alert('User updated successfully');

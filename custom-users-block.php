@@ -51,7 +51,7 @@ function custom_user_routes() {
     register_rest_route('custom-users/v1', '/user/(?P<id>\d+)', array(
         'methods' => 'GET',
         'callback' => 'custom_get_user_by_email',
-        // 'permission_callback' => 'custom_permission_callbacke', 
+        'permission_callback' => 'custom_permission_callback', 
         'args' => array(
             'id' => array(
                 'required' => true,
@@ -116,17 +116,23 @@ add_action('wp_enqueue_scripts', 'enqueue_my_react_script'); // For frontend
 add_action('enqueue_block_editor_assets', 'enqueue_my_react_script');
 
 
-// verify nonce
-function custom_permission_callback(WP_REST_Request $request){
-    // Check the nonce
+
+// verify nonce and role admin
+function custom_permission_callback(WP_REST_Request $request) {
+    // Check if the current user has the 'administrator' capability
+    if ( !current_user_can( 'administrator' ) ) {
+        return new WP_Error('rest_forbidden', 'You do not have permission to access this resource.', array('status' => 403));
+    }
+
     $nonce = $request->get_header('X-WP-Nonce');
 
-        // Verify nonce
-        if (!wp_verify_nonce($nonce, 'wp_rest')) {
-            return new WP_Error('invalid_nonce', 'Invalid nonce', array('status' => 403));
-        }
-        return true;
+    if ( ! wp_verify_nonce($nonce, 'wp_rest') ) {
+        return new WP_Error('invalid_nonce', 'Invalid nonce', array('status' => 403));
+    }
+
+    return true; // Grant access if the user is an administrator and the nonce is valid
 }
+
 
 
 

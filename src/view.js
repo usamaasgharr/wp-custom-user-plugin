@@ -11,15 +11,21 @@ const FrontendUserForm = ({ attributes }) => {
 		ID: null
 	});
 	const [isDisabled, setIsDisabled] = useState(true);
-	const apiBaseUrl = `${window.location.origin}/wordpress/wp-json/custom-users/v1`;  // defining the api base url here
+	const apiBaseUrl = MyAppData.apiUrl;
 
 	// Fetch all users on component mount
 	useEffect(() => {
 		const fetchUsers = async () => {
 			try {
-				const response = await axios.get(`${apiBaseUrl}/users`);
+				const response = await axios.get(`${apiBaseUrl}/users`, {
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': MyAppData.nonce, // Corrected to use MyAppData
+					}
+				});
 				setUsers(response.data);
 			} catch (error) {
+				alert(error.response.data.message + error.message);
 				console.error('There was an error fetching the users:', error);
 			}
 		};
@@ -39,7 +45,12 @@ const FrontendUserForm = ({ attributes }) => {
 			return;
 		}
 		try {
-			const response = await axios.get(`${apiBaseUrl}/user/${id}`);
+			const response = await axios.get(`${apiBaseUrl}/user/${id}`, {
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': MyAppData.nonce, // Corrected to use MyAppData
+				}
+			});
 			setSelectedUser(response.data);
 			setIsDisabled(false);
 		} catch (error) {
@@ -60,7 +71,12 @@ const FrontendUserForm = ({ attributes }) => {
 	const handleUpdateUser = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser);
+			const response = await axios.put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser, {
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': MyAppData.nonce, // Corrected to use MyAppData
+				}
+			});
 			if (response.status === 200) {
 				alert('User updated successfully');
 			} else {

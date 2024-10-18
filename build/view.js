@@ -4858,15 +4858,21 @@ const FrontendUserForm = ({
     ID: null
   });
   const [isDisabled, setIsDisabled] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
-  const apiBaseUrl = `${window.location.origin}/wordpress/wp-json/custom-users/v1`; // defining the api base url here
+  const apiBaseUrl = MyAppData.apiUrl;
 
   // Fetch all users on component mount
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/users`);
+        const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/users`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
+          }
+        });
         setUsers(response.data);
       } catch (error) {
+        alert(error.response.data.message + error.message);
         console.error('There was an error fetching the users:', error);
       }
     };
@@ -4886,7 +4892,12 @@ const FrontendUserForm = ({
       return;
     }
     try {
-      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/user/${id}`);
+      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/user/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
+        }
+      });
       setSelectedUser(response.data);
       setIsDisabled(false);
     } catch (error) {
@@ -4910,7 +4921,12 @@ const FrontendUserForm = ({
   const handleUpdateUser = async e => {
     e.preventDefault();
     try {
-      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser);
+      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
+        }
+      });
       if (response.status === 200) {
         alert('User updated successfully');
       } else {

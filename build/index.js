@@ -40,15 +40,14 @@ function Edit({
     ID: null
   });
   const [isDisabled, setIsDisabled] = (0,react__WEBPACK_IMPORTED_MODULE_3__.useState)(true);
-  const apiBaseUrl = `${window.location.origin}/wordpress/wp-json/custom-users/v1`;
-  console.log(MyAppData.nonce);
+  const apiBaseUrl = MyAppData.apiUrl;
   (0,react__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios__WEBPACK_IMPORTED_MODULE_5__["default"].get(`${apiBaseUrl}/users`, {
           headers: {
             'Content-Type': 'application/json',
-            'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
+            'X-WP-Nonce': MyAppData.nonce
           }
         });
         const data = response.data;
@@ -58,6 +57,7 @@ function Edit({
           allUsers: data
         });
       } catch (error) {
+        alert(error.response.data.message + error.message);
         console.error('There was an error fetching the users:', error);
       }
     };

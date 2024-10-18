@@ -15,15 +15,15 @@ export default function Edit({ attributes, setAttributes }) {
     });
 
     const [isDisabled, setIsDisabled] = useState(true);
-    const apiBaseUrl = `${window.location.origin}/wordpress/wp-json/custom-users/v1`; 
-	console.log(MyAppData.nonce)
+    const apiBaseUrl = MyAppData.apiUrl;
+
     useEffect(() => {
 		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(`${apiBaseUrl}/users`, {
 					headers: {
 						'Content-Type': 'application/json',
-						'X-WP-Nonce': MyAppData.nonce, // Corrected to use MyAppData
+						'X-WP-Nonce': MyAppData.nonce,
 					}
 				});
 				const data = response.data;
@@ -31,7 +31,9 @@ export default function Edit({ attributes, setAttributes }) {
 				setUsers(data);
 				setAttributes({ allUsers: data });
 			} catch (error) {
+				alert(error.response.data.message + error.message);
 				console.error('There was an error fetching the users:', error);
+				
 			}
 		};
 		fetchUsers();

@@ -2,6 +2,203 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/components/UserDropdown.js":
+/*!****************************************!*\
+  !*** ./src/components/UserDropdown.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+const UserDropdown = ({
+  onSelectUser
+}) => {
+  const [users, setUsers] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [access, setAccess] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const apiBaseUrl = MyAppData.apiUrl;
+  // Fetch users on mount
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/users`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': MyAppData.nonce
+          }
+        });
+        const data = response.data;
+        setUsers(data);
+      } catch (error) {
+        setAccess(true);
+        console.error('Error fetching users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    children: [access ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+      children: "You Dont have permission to access  users data"
+    }) : '', /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
+      name: "email",
+      id: "email",
+      onChange: e => onSelectUser(e.target.value),
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "",
+        children: "Select User"
+      }), users.map(user => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: user.ID,
+        children: user.user_email
+      }, user.ID))]
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UserDropdown);
+
+/***/ }),
+
+/***/ "./src/components/UserForm.js":
+/*!************************************!*\
+  !*** ./src/components/UserForm.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+const UserForm = ({
+  selectedUserId
+}) => {
+  const [selectedUser, setSelectedUser] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+    user_nicename: '',
+    display_name: '',
+    user_email: '',
+    ID: null
+  });
+  const [isDisabled, setIsDisabled] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
+  const apiBaseUrl = MyAppData.apiUrl;
+
+  // Fetch user data when the selected user changes
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (!selectedUserId) return;
+    const fetchUserById = async id => {
+      try {
+        setIsDisabled(true);
+        const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/user/${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': MyAppData.nonce
+          }
+        });
+        const data = response.data;
+        setSelectedUser(data);
+        setIsDisabled(false);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    fetchUserById(selectedUserId);
+  }, [selectedUserId]);
+
+  // Handle input change
+  const handleInputChange = e => {
+    const {
+      name,
+      value
+    } = e.target;
+    setSelectedUser(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission for updating the user
+  const handleUpdateUser = async e => {
+    e.preventDefault();
+    try {
+      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': MyAppData.nonce
+        }
+      });
+      if (response.status === 200) {
+        alert('User updated successfully');
+      } else {
+        alert('Error updating user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
+    onSubmit: handleUpdateUser,
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
+      htmlFor: "user_nicename",
+      children: "Nice Name: "
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+      type: "text",
+      name: "user_nicename",
+      value: selectedUser.user_nicename,
+      onChange: handleInputChange,
+      disabled: isDisabled
+    }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
+      htmlFor: "display_name",
+      children: "Display Name: "
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+      type: "text",
+      name: "display_name",
+      value: selectedUser.display_name,
+      onChange: handleInputChange,
+      disabled: isDisabled
+    }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
+      htmlFor: "email",
+      children: "Email: "
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+      type: "email",
+      name: "user_email",
+      value: selectedUser.user_email,
+      onChange: handleInputChange,
+      disabled: isDisabled
+    }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+      type: "submit",
+      disabled: isDisabled,
+      children: "Update"
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UserForm);
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "React" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = window["React"];
+
+/***/ }),
+
 /***/ "react/jsx-runtime":
 /*!**********************************!*\
   !*** external "ReactJSXRuntime" ***!
@@ -4839,159 +5036,28 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _components_UserDropdown__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/UserDropdown */ "./src/components/UserDropdown.js");
+/* harmony import */ var _components_UserForm__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/UserForm */ "./src/components/UserForm.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__);
+
+
 
 
 
 // The React component for the frontend form
 
-const FrontendUserForm = ({
-  attributes
-}) => {
-  const [users, setUsers] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-  const [selectedUser, setSelectedUser] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
-    user_nicename: '',
-    display_name: '',
-    user_email: '',
-    ID: null
-  });
-  const [isDisabled, setIsDisabled] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
-  const apiBaseUrl = MyAppData.apiUrl;
-
-  // Fetch all users on component mount
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/users`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
-          }
-        });
-        setUsers(response.data);
-      } catch (error) {
-        alert(error.response.data.message + error.message);
-        console.error('There was an error fetching the users:', error);
-      }
-    };
-    fetchUsers();
-  }, []);
-
-  // Fetch a user by ID and update the form when a user is selected
-  const getUserByEmail = async id => {
-    if (!id) {
-      setSelectedUser({
-        user_nicename: '',
-        display_name: '',
-        user_email: '',
-        ID: null
-      });
-      setIsDisabled(true);
-      return;
-    }
-    try {
-      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(`${apiBaseUrl}/user/${id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
-        }
-      });
-      setSelectedUser(response.data);
-      setIsDisabled(false);
-    } catch (error) {
-      console.error('There was an error fetching the user:', error);
-    }
-  };
-
-  // Handle input field changes
-  const handleInputChange = e => {
-    const {
-      name,
-      value
-    } = e.target;
-    setSelectedUser(prevUser => ({
-      ...prevUser,
-      [name]: value
-    }));
-  };
-
-  // Handle the form submission to update the user data
-  const handleUpdateUser = async e => {
-    e.preventDefault();
-    try {
-      const response = await axios__WEBPACK_IMPORTED_MODULE_2__["default"].put(`${apiBaseUrl}/user/${selectedUser.ID}`, selectedUser, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': MyAppData.nonce // Corrected to use MyAppData
-        }
-      });
-      if (response.status === 200) {
-        alert('User updated successfully');
-      } else {
-        alert('Error updating user');
-      }
-    } catch (error) {
-      console.error('There was an error updating the user:', error);
-    }
-  };
+const FrontendUserForm = () => {
+  const [selectedUserId, setSelectedUserId] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
 
   // Render the form
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-      name: "email",
-      id: "email",
-      onChange: e => {
-        setSelectedUser({
-          user_nicename: '',
-          display_name: '',
-          user_email: '',
-          ID: null
-        });
-        getUserByEmail(e.target.value);
-      },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "",
-        children: "Select User"
-      }), users.map(user => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: user.ID,
-        children: user.user_email
-      }, user.ID))]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
-      onSubmit: handleUpdateUser,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        htmlFor: "user_nicename",
-        children: "Nice Name: "
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        name: "user_nicename",
-        value: selectedUser.user_nicename,
-        onChange: handleInputChange,
-        disabled: isDisabled
-      }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        htmlFor: "display_name",
-        children: "Display Name : "
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        name: "display_name",
-        value: selectedUser.display_name,
-        onChange: handleInputChange,
-        disabled: isDisabled
-      }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        htmlFor: "email",
-        children: "Email: "
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "email",
-        name: "user_email",
-        value: selectedUser.user_email,
-        onChange: handleInputChange,
-        disabled: isDisabled
-      }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-        type: "submit",
-        disabled: isDisabled,
-        children: "Update"
-      })]
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_UserDropdown__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      onSelectUser: setSelectedUserId
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_components_UserForm__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      selectedUserId: selectedUserId
     })]
   });
 };
@@ -5000,7 +5066,7 @@ const FrontendUserForm = ({
 document.addEventListener('DOMContentLoaded', () => {
   const blockContainers = document.querySelectorAll('.wp-block-create-block-custom-users-block');
   blockContainers.forEach(blockContainer => {
-    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(FrontendUserForm, {}), blockContainer);
+    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(FrontendUserForm, {}), blockContainer);
   });
 });
 })();
